@@ -1,0 +1,34 @@
+import boto3
+import json
+
+cloudwatch = boto3.client('cloudwatch')
+
+dashboard_name = 'python_automation'
+metric_name = 'CPUUtilization'
+namespace = 'AWS/EC2'
+instance_id = 'i-0bf30c5320d4190e9'
+region = 'eu-north-1'
+
+widgets = [
+    {
+        'type': 'metric',
+        'x': 0,
+        'y': 0,
+        'width': 12,
+        'height': 6,
+        'properties': {
+            'metrics': [[namespace, metric_name, 'InstanceId', instance_id]],
+            'period': 300,
+            'stat': 'Average',
+            'region': region,
+        },
+    },
+]
+
+cloudwatch.put_dashboard(
+    DashboardName=dashboard_name,
+    DashboardBody=json.dumps({'widgets': widgets}),
+)
+
+print(f"Dashboard '{dashboard_name}' created successfully.")
+
