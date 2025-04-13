@@ -1,0 +1,26 @@
+- name: Launch EC2 Instance in EU-NORTH-1
+  hosts: localhost
+  connection: local
+  gather_facts: no
+  vars_files:
+    - vault.yml
+
+  tasks:
+    - name: Launch EC2 Instance
+      amazon.aws.ec2_instance:
+        key_name: dockerlab7
+        instance_type: t2.micro
+        image_id: ami-0e8a34246278c21e4  # Ubuntu 22.04 LTS AMI ID for eu-north-1 (double check latest if needed)
+        region: eu-north-1
+        wait: yes
+        count: 1
+        aws_access_key: "{{ aws_access_key }}"
+        aws_secret_key: "{{ aws_secret_key }}"
+        tags:
+          Name: "Ansible-EC2-Instance"
+      register: ec2_result
+
+    - name: Show EC2 Instance Public IP
+      debug:
+        msg: "EC2 Public IP: {{ ec2_result.instances[0].public_ip_address }}"
+
