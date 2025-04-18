@@ -1,0 +1,30 @@
+- name: Create EC2 Instances using Vaulted Credentials
+  hosts: localhost
+  connection: local
+  gather_facts: no
+  vars_files:
+    - secrets.yml
+
+  vars:
+    instance_details:
+      - { name: "Ubuntu-Server-1", ami: "ami-0c1ac8a41498c1a9c", instance_type: "t3.micro" }
+      - { name: "Ubuntu-Server-2", ami: "ami-0c1ac8a41498c1a9c", instance_type: "t3.micro" }
+      - { name: "amazon-server-1", ami: "ami-0274f4b62b6ae3bd5", instance_type: "t3.micro" }
+
+  tasks:
+    - name: Launch EC2 instances
+      amazon.aws.ec2_instance:
+        aws_access_key: "{{ aws_access_key }}"
+        aws_secret_key: "{{ aws_secret_key }}"
+        region: eu-north-1
+        key_name: dockerlab7
+        instance_type: "{{ item.instance_type }}"
+        image_id: "{{ item.ami }}"
+        wait: yes
+        count: 1
+        tags:
+          Name: "{{ item.name }}"
+      loop: "{{ instance_details }}"
+      loop_control:
+        label: "{{ item.name }}"
+

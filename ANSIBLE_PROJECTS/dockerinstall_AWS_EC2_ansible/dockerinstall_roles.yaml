@@ -1,0 +1,5 @@
+---
+- hosts: all
+  become: true
+  roles:
+    - frack113.ludus_docker_engine
